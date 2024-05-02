@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo Application</title>
+  <style>
+    .is-completed {
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h1>Todo Application</h1>
+    <form @submit.prevent="addTodo">
+      <input type="text" v-model="newTodoText">
+      <input type="submit" value="Add">
+    </form>
+
+    <ul>
+      <li v-for="todo in todos" :key="todo.id">
+        <input type="checkbox" v-model="todo.isCompleted">
+        <span :class="{ 'is-completed': todo.isCompleted }">{{ todo.text }}</span>
+        <button @click="deleteTodo(todo.id)">Delete</button>
+      </li>
+    </ul>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script>
+    const { createApp, ref } = Vue
+
+    const app = createApp({
+      setup() {
+        const todos = ref([]);
+        const newTodoText = ref('');
+
+        function addTodo() {
+          if (!newTodoText.value.trim()) return; // 입력 값이 없으면 추가하지 않음
+
+          const newTodo = {
+            id: Date.now(),
+            text: newTodoText.value,
+            isCompleted: false
+          };
+
+          todos.value.push(newTodo); // 새로운 할 일을 todos 배열에 추가
+          newTodoText.value = ''; // 입력 필드 초기화
+        }
+
+        function deleteTodo(todoId) {
+          const index = todos.value.findIndex(todo => todo.id === todoId);
+          if (index !== -1) {
+            todos.value.splice(index, 1); // 선택된 할 일 삭제
+          }
+        }
+
+        return {
+          todos,
+          newTodoText,
+          addTodo,
+          deleteTodo
+        };
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+
+</html>
